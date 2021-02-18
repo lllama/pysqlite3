@@ -1,0 +1,21 @@
+environment:
+  matrix:
+    # - PYTHON: "C:/Python35-x64"
+    - PYTHON: "C:/Python36-x64"
+    - PYTHON: "C:/Python37-x64"
+    - PYTHON: "C:/Python38-x64"
+    - PYTHON: "C:/Python39-x64"
+
+install:
+    # build wheel:
+    - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64'
+    - cd %REPO_DIR%
+    - git checkout %BUILD_COMMIT%
+    - "%PYTHON%/python.exe -m pip install --upgrade pip"
+    - "%PYTHON%/python.exe -m pip install --upgrade setuptools wheel numpy"
+    - ps: Invoke-WebRequest -OutFile sqlite.zip https://www.sqlite.org/2021/sqlite-amalgamation-3340100.zip
+    - ps: Expand-Archive sqlite.zip .
+    - ps: cp sqlite-amalgamation-3340100/sqlite3.* .
+build_script:
+    - "%PYTHON%/python.exe setup.py build_static"
+    - "%PYTHON%/python.exe -m pip wheel . -w wheelhouse --verbose"
